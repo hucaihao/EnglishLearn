@@ -1,0 +1,91 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+<audio id="orderAlert" src="../../content/sound/orderAlert.mp3"></audio>
+<script>
+    function GetWordInfo() {
+        ClearWordInfo();
+        $.ajax({
+            type: "GET",
+            url: "/SpellingGames/GetWordInfo",
+            async: false,
+            cache: false,
+            dataType: "json",
+            //data: { keyValue: keyValue },
+            success: function (msg) {
+                if (msg) {
+                    $("#wordTranslation").html(msg.Translate);
+                    $("#wordPhonogram").html(msg.Phonogram);
+                    $("#word").html(msg.Word);
+                }
+            }
+        });
+    }
+    function ClearWordInfo() {
+        $("#wordTranslation").html("");
+        $("#wordPhonogram").html("");
+        $("#word").html("");
+        $("#word").hide();
+
+    }
+    function WordCheck() {
+        var baseWord = $("#word").html()
+        var inputWord = $("#wordInput").val()
+        if (baseWord == inputWord) {
+            alert("输入正确");
+        } else {
+            alert("输入错误");
+        }
+    }
+    function WordVolice() {
+        var word = $("#word").html();
+        $.ajax({
+            type: "GET",
+            url: "/SpellingGames/makeMp3",
+            async: false,
+            cache: false,
+            data: { word: word },
+            success: function (msg) {
+                if (msg) {
+                    $("#orderAlert").attr("src", msg);
+                    document.getElementById("orderAlert").play();
+                }
+            }
+        });
+
+
+    }
+    function WordShow() {
+        $("#word").show();
+    }
+</script>
+
+
+<input type="button" value="获取单词" onclick="GetWordInfo()" />
+
+
+<table>
+    <tr>
+        <td><label>单词翻译</label></td>
+        <td><span id="wordTranslation"></span></td>
+    </tr>
+    <tr>
+        <td><label>单词音标</label></td>
+        <td><span id="wordPhonogram"></span></td>
+        <td><input type="button" value="读音" onclick="WordVolice()" /></td>
+    </tr>
+    <tr>
+        <td><label>英语单词</label></td>
+        <td><span id="word"></span></td>
+        <td><input type="button" value="查看" onclick="WordShow()" /></td>
+
+    </tr>
+    <tr>
+        <td><input id="wordInput" type="text" /></td>
+        <td><input type="button" value="验证单词" onclick="WordCheck()" /></td>
+    </tr>
+</table>
+
